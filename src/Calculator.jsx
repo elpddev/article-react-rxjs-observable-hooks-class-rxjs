@@ -1,20 +1,26 @@
 import React from "react";
 import { pipe, Subject, merge } from "rxjs";
 import { filter, map, scan, takeUntil, tap } from "rxjs/operators";
+import styled from "@emotion/styled";
 import Result from "./Result";
 import NumPad from "./NumPad";
 import MathOperationsPad from "./MathOperationsPad";
 import "./styles.css";
 
-export default class App extends React.Component {
+const CaclulatorLayout = styled.div({
+  display: "flex",
+  flexFlow: "column;,"
+});
+
+export default class Caclulator extends React.Component {
   render() {
     return (
-      <div className="main">
+      <CaclulatorLayout>
         <Result content={this.state.result} />
         <NumPad whenAction={this.onNumber} />
         <MathOperationsPad onAction={this.onMathOperation} />
         <div>{JSON.stringify(this.state.expr, null, 2)}</div>
-      </div>
+      </CaclulatorLayout>
     );
   }
 
