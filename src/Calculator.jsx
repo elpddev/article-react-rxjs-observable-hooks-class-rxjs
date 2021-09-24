@@ -60,18 +60,15 @@ export default class Caclulator extends React.Component {
     this.mathExpression$ = this.streamMathExpression();
     this.result$ = this.streamResult();
 
-    this.result$
-      .pipe(
-        tap((result) => this.setState((state) => ({ ...state, result }))),
-        takeUntil(this.onUnmount$)
+    merge(
+      this.result$.pipe(
+        tap((result) => this.setState((state) => ({ ...state, result })))
+      ),
+      this.mathExpression$.pipe(
+        tap((expr) => this.setState((state) => ({ ...state, expr })))
       )
-      .subscribe();
-
-    this.mathExpression$
-      .pipe(
-        tap((expr) => this.setState((state) => ({ ...state, expr }))),
-        takeUntil(this.onUnmount$)
-      )
+    )
+      .pipe(takeUntil(this.onUnmount$))
       .subscribe();
   }
 
