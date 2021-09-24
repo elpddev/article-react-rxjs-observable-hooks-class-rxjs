@@ -130,7 +130,6 @@ export default class Caclulator extends React.Component {
           { values: [], operator: null }
         )
       ),
-      tap((x) => console.log("*** result 2", x)),
       map(({ values }) => values[0]),
       map((result) => JSON.stringify(result))
     )(null);
