@@ -7,18 +7,35 @@ import NumPad from "./NumPad";
 import MathOperationsPad from "./MathOperationsPad";
 import "./styles.css";
 
-const CaclulatorLayout = styled.div({
+const CaclulatorLayout = styled(
+  ({ className, result, numPad, operationsPad }) => (
+    <div className={className}>
+      <div className="result">{result}</div>
+      <div className="keysPads">
+        {numPad} {operationsPad}
+      </div>
+    </div>
+  )
+)({
   display: "flex",
-  flexFlow: "column;,"
+  flexFlow: "column",
+  gap: "15px",
+  alignItems: "stretch",
+  ".result": {},
+  ".keysPads": {
+    display: "flex",
+    gap: "15px"
+  }
 });
 
 export default class Caclulator extends React.Component {
   render() {
     return (
-      <CaclulatorLayout>
-        <Result content={this.state.result} />
-        <NumPad whenAction={this.onNumber} />
-        <MathOperationsPad onAction={this.onMathOperation} />
+      <CaclulatorLayout
+        result={<Result content={this.state.result} />}
+        numPad={<NumPad whenAction={this.onNumber} />}
+        operationsPad={<MathOperationsPad onAction={this.onMathOperation} />}
+      >
         <div>{JSON.stringify(this.state.expr, null, 2)}</div>
       </CaclulatorLayout>
     );
@@ -113,7 +130,7 @@ export default class Caclulator extends React.Component {
               return { values, operator: value };
             }
 
-            if (action === "number" && operator === null) {
+            if (operator === null) {
               return { values: [...values, value], operator };
             }
 
