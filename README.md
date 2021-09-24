@@ -1,2 +1,3 @@
-# article-react-rxjs-observable-hooks-class-rxjs
-Created with CodeSandbox
+# Example Usage Of RxJs in React Component
+
+This is an example React project of using RxJS withing a React component.
