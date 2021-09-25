@@ -1,6 +1,6 @@
 import React from "react";
 import { pipe, Subject, merge } from "rxjs";
-import { filter, map, scan, takeUntil, tap } from "rxjs/operators";
+import { filter, map, scan, shareReplay, takeUntil, tap } from "rxjs/operators";
 import styled from "@emotion/styled";
 import Result from "./Result";
 import NumPad from "./NumPad";
@@ -35,9 +35,7 @@ export default class Caclulator extends React.Component {
         result={<Result content={this.state.result} />}
         numPad={<NumPad whenAction={this.onNumber} />}
         operationsPad={<MathOperationsPad onAction={this.onMathOperation} />}
-      >
-        <div>{JSON.stringify(this.state.expr, null, 2)}</div>
-      </CaclulatorLayout>
+      />
     );
   }
 
@@ -55,12 +53,15 @@ export default class Caclulator extends React.Component {
 
   componentDidMount() {
     this.onUnmount$ = new Subject();
+    this.propsChanges$ = new Subject();
     this.numAction$ = new Subject();
     this.mathOperation$ = new Subject();
+    this.inputMode$ = handlePropChange("mode", this.propsChanges$);
     this.mathExpression$ = this.streamMathExpression();
     this.result$ = this.streamResult();
 
     merge(
+      this.inputMode$,
       this.result$.pipe(
         tap((result) => this.setState((state) => ({ ...state, result })))
       ),
@@ -78,10 +79,7 @@ export default class Caclulator extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    // Typical usage (don't forget to compare props):
-    if (this.props.userID !== prevProps.userID) {
-      this.fetchData(this.props.userID);
-    }
+    this.propsChanges$.next({ prev: prevProps, current: this.props });
   }
 
   streamMathExpression() {
@@ -148,4 +146,12 @@ export default class Caclulator extends React.Component {
       map((result) => JSON.stringify(result))
     )(null);
   }
+}
+
+function handlePropChange(propName, propsChanges$) {
+  return propsChanges$.pipe(
+    filter(({ prev, current }) => prev[propName] !== current[propName]),
+    map(({ current }) => current[propName]),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 }
